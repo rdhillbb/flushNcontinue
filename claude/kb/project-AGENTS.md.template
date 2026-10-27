@@ -1,0 +1,81 @@
+# AGENTS.md — {{PROJECT}} (shared operating file, all agents)
+
+Single source of rules. Codex reads this file; Claude Code imports it via `@AGENTS.md` in `CLAUDE.md` (which holds only Claude-Code-only items). Edit rules HERE only; never copy a rule into `CLAUDE.md`. Created {{DATE}} by the `kbinit` skill. The KB section below is refreshed by `kbinit`; everything after it is this project's own. Respect any applicable `AGENTS.override.md` or deeper `AGENTS.md`.
+
+<fill: one or two sentences — what this application is, what it is built with, where it runs, its URL.>
+
+**Progressive disclosure:** this file holds rules and pointers only. Read a referenced doc when you work in that area, not before.
+
+{{KB_SECTION}}
+
+---
+
+## Non-Negotiable Rules (the only copy)
+
+This project's non-negotiable rules live here and nowhere else. Until the project adds its own, these house-wide defaults apply:
+
+1. **Secrets:** never in a file (`.env`, markdown, register, memory, log). Refer to the project's secret store by key name plus "fetch live"; never record a value.
+2. **Git and deploys:** commit, push and deploy only within explicit operator authorization. `flush` commits only the KB files it wrote, by name, locally; `kbinit` leaves its changes uncommitted; neither ever pushes. <fill: the project's deploy window / branch rule, or delete this clause>
+3. **Facts only — never fabricate or guess:** verify before asserting (`git show <hash>` before citing a commit; `ls` before pointing to a file). If you cannot find it or do not know, say so and stop. No invented paths, hashes, column names, dates, prices or citations. As a reviewer, never mint operator decisions.
+4. **Financials:** never compute money by hand; use the project's calculator tool. <fill: tool path, or delete this rule>
+5. **Ports:** every listener reads its port from the environment; record reservations in `PORTS.md`. A hardcoded port is a defect. <fill: how ports are reserved, or delete this rule>
+6. **Database:** connection details from the environment (`~/.zshrc` exports) or the secret store; never hardcode. Read the project's schema doc before writing SQL.
+7. **Scope and preservation:** follow the operator's current scope; preserve unrelated work, comments and documentation. Record non-obvious decisions with their actual operator reason (WHY) and keep dead ends so a new context does not repeat them.
+8. **Operator communication:** read for intent (dyslexia, fast typing); ask when unclear; short plain replies; no em dashes in customer-facing text.
+9. <fill: project-specific rule (customer emails, build host, data sources ...), or delete this line>
+
+**Adding skills, agents or tools:** before adding one, answer three questions. Is it needed for most tasks? Could one instruction in this file do the job instead? What does it cost to maintain? Unless the answers are clearly yes / no / low, write a playbook under docs/playbooks/ instead.
+
+---
+
+## Project facts (fill in; keep them current — `{{NOW}}` holds the freshness-stamped detail)
+
+- **Runtime / hosting:** <fill: language, framework, where it runs, how it is deployed>.
+- **Database:** <fill: name, where it runs, what is populated and what is EMPTY, verified date>. Connection from the environment only.
+- **Ports:** <fill: `<name>` = <port>> (see `PORTS.md`).
+- **Deploy branch / environments:** <fill: which branch deploys where; `main` = what is live?>.
+- **Known traps:** `{{PITFALLS}}` (`P-NN`); record the symptom AND the cause — symptoms usually point away from causes.
+
+---
+
+## Build / Test / Verify
+
+- **Build:** <fill: build command> · **Test:** <fill: test command> · **Lint:** <fill: lint command>. Run before declaring a change done.
+- `bash scripts/kb/session_health.sh` is a local session-start probe, not an application acceptance test.
+- If a command here does not work, say so — do not invent a replacement.
+
+---
+
+## Database — read the schema before querying
+
+<fill: schema doc path, which database holds which data, known schema-doc rot (`C-NN`), common column mistakes — or delete this section if the project has no database.>
+
+---
+
+## Code Patterns
+
+<fill: the three or four recurring recipes (add endpoint, add job, add migration, add secret) — or delete this section.>
+
+---
+
+## Task Router — Read When Needed
+
+Identify the domain, read the target first. If a listed target does not exist, say so (Rule 3). This is the ONLY copy of the router; `flush` maintains it. Claude Code sees it through the `@AGENTS.md` import.
+
+<documentation_index>
+| Task / Domain | Read first (path + why) |
+|---|---|
+| **Resume / continuous dialog** | `{{BRIEF}}` — Live thread, then Session thread |
+| **Current facts and focus** | the matching section in `{{NOW}}` |
+| **Production issues / regressions** | `{{FINDINGS}}` (grep `F-NN`) → `{{DETAILS}}` |
+| **Stale documentation** | `C-NN` in `{{CONTRADICTIONS}}` |
+| **Known pitfalls / gotchas** | `{{PITFALLS}}` — read the Index table first |
+| **What happened / when** | `{{HISTORY_DIR}}/{{QUARTER}}.md` (grep the date or `F-NN`); index `{{HISTORY_INDEX}}` |
+| **Task orders / software factory** | `tasks/` → the initiative's `TOs/TO-0000-readme.md` |
+| **Playbooks (procedures too rare for this file)** | docs/playbooks/ (create on first use) |
+| *<fill: this project's domains — deploying, architecture, SEO, pricing ...>* | <fill: path + why> |
+</documentation_index>
+
+---
+
+**Last Updated:** {{DATE}} (created by the kbinit skill; AGENTS.md is the single rules file, CLAUDE.md imports it)

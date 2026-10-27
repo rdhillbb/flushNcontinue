@@ -1,0 +1,64 @@
+# Tribal Knowledge (Index / Router) — {{PROJECT}}
+
+Purpose: record major activities, issues, events, fixes, deployments, and operational decisions so
+context survives a crashed session, a new context, or a future operator asking why work happened.
+Entries are factual, dated, concise, and link to the stronger source document when one exists.
+
+This file is a **map** to the per-quarter child files under `{{HISTORY_DIR}}/`. The history lives
+in the children; nothing is ever pruned or edited there. {{HISTORY_NOTE}}.
+
+How to use this file:
+
+- Read this index during recovery or handoff, then grep the child for the quarter you care about.
+- Prefer newer dated entries over older entries when they conflict.
+- Use this file and the children as a map to source documents, not as a replacement for them.
+- Add an entry **when the event happens** (not batched at session end) for: production deployment,
+  incident, customer-impacting fix/refund/decision, major code change landing, monitoring/tooling/
+  infra change, important operator decision. When unsure, record it.
+- Every distinct `flush` adds one dated handoff entry on top of those (agent, task, changes,
+  decisions with the actual WHY, evidence or commit — or "uncommitted" — dead ends, open questions,
+  next action), even when nothing else changed. Never include secrets.
+
+Where new entries go:
+
+- **New entries go at the TOP of `## Entries` in the current child** (the newest file listed
+  under Children). Append-only, newest first. `kb_tools.py append-history` places the flush entry
+  there, opens the next quarter child on rollover, and starts a continuation child
+  (`<quarter>-02.md`) when a child passes ~300 KB — listing each new child below.
+- Do NOT edit, reorder or move existing entries in the children. Corrections are new entries.
+
+Entry format (used in every child):
+
+```text
+Date:
+Time:            (state the zone)
+Area:
+Event:
+Impact:
+Resolution:
+GitHub ref:      (commit hash + branch; if uncommitted say so)
+Source:          (link the stronger doc instead of duplicating)
+Follow-up:
+```
+
+## Children (newest first)
+
+## How to find an entry
+
+Do not read a child top to bottom. Grep it, then read the block.
+
+```bash
+grep -n '^### {{DATE}}' {{HISTORY_DIR}}/<quarter>.md      # by date (entry headings start with the date)
+grep -n 'F-12' {{HISTORY_DIR}}/<quarter>.md               # by finding ID
+grep -n '<hash>' {{HISTORY_DIR}}/<quarter>.md             # by commit hash
+grep -n '^### ' {{HISTORY_DIR}}/<quarter>.md | head -20   # the 20 newest entry headings
+```
+
+Then `sed -n '<start>,<end>p'` the block you need. Newer entries sit higher and win on conflict.
+
+## Split rule
+
+- A new quarter child opens on the first flush of the quarter and is listed above the current one.
+- If a child exceeds ~300 KB mid-quarter, a continuation child (`<quarter>-02.md`) is started and
+  listed here; entries are never moved out of the full child.
+- Never edit, reorder, or move existing entries. Split, never delete.

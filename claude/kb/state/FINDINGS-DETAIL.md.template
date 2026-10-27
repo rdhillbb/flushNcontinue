@@ -1,0 +1,10 @@
+# FINDINGS-DETAIL — full-text archive (COLD tier)
+
+> Companion to `{{FINDINGS}}` (the slim HOT register). The register carries one line per
+> finding; when a finding needs more narrative — evidence trails, instance lists, customer or
+> commit references — append it HERE under a `### F-NN — <title>` heading, with a dated note.
+> Append-only: never rewrite existing text; a correction is a new dated note pointing to the
+> corrected claim. `verify-flush` rejects a rewrite of existing narrative. To find a finding:
+> grep its `F-NN`.
+
+---

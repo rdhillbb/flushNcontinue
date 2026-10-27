@@ -1,0 +1,23 @@
+# Claude-only toolkit (operator 2026-10-27): Codex material is not shipped
+codex/
+templates/personal-codex-AGENTS.md
+bin/sync_kb_skills.sh
+# caches and local backups
+__pycache__/
+.pytest_cache/
+*.bak-*
+.DS_Store
+# laptop-history docs, not shipped
+FACTORYMATERIAL-README.md
+claude/kb/AGENTIC-SETUP-PROMPT.md
+# KB only (operator 2026-10-27): software-factory skills, docs and tooling are not shipped
+claude/skills/softwarefactory/
+claude/skills/task-order-author/
+claude/skills/taskorderreview/
+claude/skills/practicesreview/
+claude/skills/buildtaskorders/
+claude/*.md
+scripts/factory_checks.py
+scripts/*.schema.json
+scripts/tests/test_factory_checks.py
+scripts/tests/test_readiness.py

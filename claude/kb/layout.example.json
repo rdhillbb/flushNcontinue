@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "project": "Example project",
+  "timezone": "UTC",
+  "history_kind": "quarterly",
+  "homes": {
+    "brief": "state/BRIEF.md",
+    "now": "state/NOW.md",
+    "now_archive": "state/NOW-ARCHIVE.md",
+    "findings": "state/FINDINGS.md",
+    "details": "state/FINDINGS-DETAIL.md",
+    "contradictions": "state/CONTRADICTIONS.md",
+    "pitfalls": "docs/buildout/04-KNOWN-PITFALLS.md",
+    "history_index": "docs/TribalKnowledge.md",
+    "history_dir": "docs/tribal"
+  },
+  "memory_dir": "~/.claude/projects/-Users-<you>-apps-<project>/memory"
+}

@@ -1,0 +1,93 @@
+# KNOWLEDGE-MAP — entry point for {{PROJECT}} knowledge
+
+> Three lifecycles (STATE / KNOWLEDGE / HISTORY), three tiers (HOT / WARM / COLD), three
+> registers (`NOW` / `CONTRADICTIONS` / `FINDINGS`) plus the session handoff (`BRIEF`).
+> One entry point + one precedence rule. The live system always wins; point, don't copy; never
+> snapshot a volatile fact; one home per fact; a human gates the commit.
+>
+> Created by the `kbinit` skill on {{DATE}}. Last reviewed: {{DATE}}.
+> Health: `bash scripts/kb/kb_lint.sh` (KB) · `bash scripts/kb/session_health.sh` (live).
+> `state/kb-layout.json` records the same homes for the checker; if they disagree, reconcile first.
+
+This file is **the** entry point. It holds no detail — it routes to the file that does.
+
+---
+
+## 1. The model
+
+| Layer | Answers | Lifecycle | Tier | Home |
+|---|---|---|---|---|
+| **HANDOFF** | Where did the last session stop? What was decided? What is next? What must the operator confirm before work starts? | overwritten every `flush`; Live thread block overwritten every `checkpoint`; `## Alignment` section written by `flush` only | HOT, injected by the session-start hook, ≤ 8 KB | `{{BRIEF}}` |
+| **STATE** | What is true right now? | mutates; facts freshness-stamped; ONE `## Current focus` | HOT, ≤ 35 KB | `{{NOW}}` |
+| | Which focus blocks were superseded? | append-only, verbatim, newest first | COLD | `{{NOW_ARCHIVE}}` |
+| | Which docs are stale? | shrinks as docs are fixed at source | HOT, ≤ 20 KB | `{{CONTRADICTIONS}}` (`C-NN`) |
+| | Which findings are open? | shrinks as closed; audit trail kept | HOT, ≤ 36 KB, one line per finding | `{{FINDINGS}}` (`F-NN`) |
+| | Full finding narrative | append-only | COLD | `{{DETAILS}}` (grep `F-NN`) |
+| **KNOWLEDGE** | What bit us before, and why? | append-mostly | COLD | `{{PITFALLS}}` (`P-NN`, Index table at top) |
+| | Standing operator rules, preferences, dated reminders | curated | COLD | auto-memory: `{{MEMORY_DIR}}/MEMORY.md` (+ topic files, `issues/`, `notes/`) — Claude Code only |
+| **HISTORY** | What happened, when? | immutable, append-only, newest first | WARM | newest child listed in `{{HISTORY_INDEX}}` (the index) — {{HISTORY_NOTE}} |
+
+Auto-memory is keyed on the repo path Claude Code first opened (a worktree keeps the ORIGINAL
+path); check the directory exists before writing. Codex has none: shared rules also live in the repo.
+
+## 2. Precedence rule (resolves every "which file wins")
+
+```
+operator's latest explicit instruction
+  >  live system (git, running services, databases, external APIs)
+  >  {{NOW}}  >  {{CONTRADICTIONS}}  >  {{FINDINGS}}
+  >  {{BRIEF}} (a snapshot — its facts must also live in a register)
+  >  KNOWLEDGE-MAP.md (where to look)  >  AGENTS.md task router  >  everything else
+```
+
+- **The live system always wins for STATE.** Files describe structure; query the system before acting.
+- A newer dated entry beats an older one. A `C-NN` row beats the doc it flags.
+- A saved next action in BRIEF is context, not new authorization.
+- `zero.md` (if present) is a retired entry point — pointer only. Do not read it for state.
+
+## 3. Per-session read order (activation)
+
+Read order and resume protocol: `AGENTS.md` Session Start, the only copy. Read this map when you update the KB, not at every session start.
+
+## 4. Task router
+
+The router table lives in **`AGENTS.md` → `<documentation_index>`** (one copy only; Claude Code
+sees it through the `@AGENTS.md` import in `CLAUDE.md`).
+This map routes to the *registers*; the router routes to the *domain docs*.
+
+## 5a. Checkpoint discipline (`checkpoint` — many times per session, ~20 s each)
+
+`flush` runs at the end; a crash or compaction mid-exchange loses everything since the last one.
+`checkpoint` overwrites ONE ≤ 1.5 KB block at the top of `{{BRIEF}}` —
+`## Live thread (checkpoint) — <time>` — with exactly these labelled lines: Agent · Task · Last
+operator instruction (verbatim, short) · I was doing · Next action · Decisions this session (with
+WHY) · Dead ends tried · Open question for operator · Uncommitted · Context at checkpoint.
+Registers and history are untouched; `verify-flush` rejects a BRIEF missing any of the ten labels.
+
+Context thresholds (50 / 62 / 70%) and who watches the meter: `AGENTS.md` Session Start, the only copy.
+
+## 5. Knowledge Base Update Procedure (`flush` — before a context reset, handoff, or when findings accumulate)
+
+The procedure is the `flush` skill (`~/.claude/skills/flush/SKILL.md`; the Codex copy is synced by `~/bin/sync_kb_skills.sh`). It is the only copy; do not restate it here.
+
+## 6. Maintenance discipline and size budgets
+
+| File | Budget | When over budget |
+|---|---|---|
+| `{{BRIEF}}` | 8 KB (Live thread ≤ 1.5 KB) | trim summaries; every fact already lives elsewhere |
+| `{{NOW}}` | 35 KB | a focus block became history — archive it verbatim in `{{NOW_ARCHIVE}}` |
+| `{{FINDINGS}}` | 36 KB | narrative crept in — move it to `{{DETAILS}}`; else close or merge findings |
+| `{{CONTRADICTIONS}}` | 20 KB | fix docs at source and close rows |
+| `KNOWLEDGE-MAP.md` / `AGENTS.md` / `CLAUDE.md` | 12 KB / 20 KB / 4 KB | rules and pointers only; `CLAUDE.md` stays thin (`@AGENTS.md` + Claude-only items) |
+| `{{HISTORY_DIR}}/{{QUARTER}}.md` | ~300 KB | `append-history` opens the next child (`<quarter>-02`) |
+
+- One home per fact. Point, don't copy. Never snapshot a volatile fact.
+- Never reuse an `F-`/`P-`/`C-` ID; never delete a finding, an archived focus block or a history entry.
+- Never write a secret's value into any file — key name + "fetch live" only.
+- Budgets are bytes, not lines.
+
+## 7. Locating things fast
+
+Grep the ID or the date, then read only that block: `grep -n 'F-12' {{FINDINGS}} {{DETAILS}}`,
+`grep -n '^## P-' {{PITFALLS}}`, `grep -n '^### {{DATE}}' {{HISTORY_DIR}}/{{QUARTER}}.md`.
+`bash scripts/kb/kb_lint.sh` prints budgets, next IDs, dead pointers and checkpoint age.

@@ -1,0 +1,47 @@
+# NOW — current state snapshot
+
+> HOT. Single source per fact. Every fact is freshness-stamped. **The live system wins.**
+> Belongs here: facts that change on a days+ scale.
+> Does NOT belong here: working-tree status, exact HEAD, live balance/health/credentials →
+> those say "query live."
+> Size budget: ≤ 35 KB. Over budget = a focus block has become history — archive it verbatim in
+> `{{NOW_ARCHIVE}}` (KNOWLEDGE-MAP §6). Exactly ONE `## Current focus` section lives here.
+
+## Identity / infra
+
+| Fact | Value | last_verified |
+|---|---|---|
+| Project | {{PROJECT}} | {{DATE}} |
+| Canonical repo | <fill: path> | {{DATE}} |
+| Working branch | query live (`git branch --show-current`) | {{DATE}} |
+| Runtime / host | <fill> | {{DATE}} |
+| Database | <fill: name and where it runs; what is populated and what is EMPTY; never write credentials, name the secret store key> | {{DATE}} |
+| Ports | <fill: name = port, from `PORTS.md`> | {{DATE}} |
+
+## Product / policy facts
+
+| Fact | Value | last_verified |
+|---|---|---|
+
+## Current focus
+
+> Only the CURRENT focus lives here. When a focus block is superseded, the flush skill copies the
+> whole block verbatim (this heading, body and trailing blank lines) under `## Entries` in
+> `{{NOW_ARCHIVE}}` before replacing it — never edit the archive, never let this section grow.
+
+### {{DATE}} — KB initialized
+
+- Knowledge base created with the `kbinit` skill. Fill Identity / infra, then record the actual task.
+
+## Volatile — query live, never snapshot
+
+| Fact | How to get it |
+|---|---|
+| Working-tree status | `git status --short` |
+| Exact HEAD | `git log -1` |
+| Service health | <fill: command or URL; `scripts/kb/session_health.sh` CONFIG block> |
+
+## Verification pointers
+
+Use the project's documented checks (`AGENTS.md` → Build / Test / Verify). A KB health check is
+not a build or test. Previous focus blocks: `{{NOW_ARCHIVE}}`.

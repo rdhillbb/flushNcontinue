@@ -1,0 +1,10 @@
+# NOW archive — {{PROJECT}} (COLD tier)
+
+> Superseded `## Current focus` blocks from `{{NOW}}`, newest first, inserted directly below
+> `## Entries` with a dated archive heading. The flush skill copies each old block **verbatim**
+> before replacing it in NOW: its `## Current focus` heading, body and trailing blank lines up to
+> the next level-2 heading or end of file. Do not copy only the body or reformat it.
+> Never edit or delete an archived block; `verify-flush` rejects any change to existing entries.
+> To find a past focus: grep the date or the task name.
+
+## Entries

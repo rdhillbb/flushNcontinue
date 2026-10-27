@@ -1,0 +1,14 @@
+# CONTRADICTIONS — doc-rot register
+
+> The managed exception list. Turns "don't trust the docs" into a finite, shrinking table.
+> **Add** a row when you spot rot. **Close** the row (Status CLOSED, keep the ID and the evidence)
+> only when the source doc is fixed at source; a partial repair stays OPEN. Never reuse an ID.
+> A growing file = docs drifting faster than they are repaired.
+> **Next free ID: C-1** (recompute before assigning). Size budget: ≤ 20 KB.
+> `MEMORY.md` in this table = the Claude auto-memory index at `{{MEMORY_DIR}}/MEMORY.md` (outside the repo).
+
+| ID | Status | Doc says (source) | Truth | Since | Fix action / closure evidence |
+|---|---|---|---|---|---|
+
+## Notes
+

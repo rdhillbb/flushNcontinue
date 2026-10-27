@@ -1,0 +1,1 @@
+{"matcher":"Bash","hooks":[{"type":"command","command":"bash \"${CLAUDE_PROJECT_DIR:-.}/scripts/hooks/pretooluse-guard.sh\"","timeout":5000}]}

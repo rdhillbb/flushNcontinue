@@ -1,0 +1,59 @@
+# BRIEF — {{PROJECT}} session handoff (maintained by the flush and checkpoint skills; keep under 8 KB)
+
+Updated: {{STAMP}} | Branch: verify with git branch --show-current | Tree: verify with git status
+
+<!-- Keep verbatim quotes exact; label summaries separately. Verify any counts, and cite durable
+evidence for failed attempts and their repairs. Every fact here must also live in a register or
+in the history ledger; BRIEF is a snapshot, not a home. -->
+
+## Live thread (checkpoint) — {{STAMP}}
+
+Agent: kbinit
+Task: knowledge base initialized
+Last operator instruction (verbatim, short): not recorded by the initializer
+I was doing: creating the shared project knowledge files
+Next action: inspect the project and record the current task with checkpoint
+Decisions this session (with WHY): keep all session continuity in the repository so both seats resume from the same files
+Dead ends tried: none recorded
+Open question for operator: none recorded
+Uncommitted: KB files; verify with git status
+Context at checkpoint: unknown
+
+## Alignment (answer before work starts)
+
+none
+
+## Session thread (continue here)
+
+### Task in progress
+Knowledge base initialized {{DATE}}. Project facts have not been inferred.
+
+### Done this session
+Created the missing KB files; existing content was preserved.
+
+### Next step (in order)
+1. Fill the verified project facts in `{{NOW}}` (Identity / infra) and `AGENTS.md` (project facts, build/test, task router).
+2. Fill the CONFIG block of `scripts/kb/session_health.sh`.
+
+### Decisions of record (with WHY)
+Shared paths and update rules: `KNOWLEDGE-MAP.md`.
+
+### Dead ends tried
+None recorded.
+
+### Open questions for operator
+None recorded.
+
+### Uncommitted / staged-not-deployed
+KB changes are uncommitted. No deployment was performed.
+
+## Current state (10 lines max — full detail in {{NOW}})
+
+- Fresh KB initialized {{DATE}}: project runtime facts remain unverified; see `AGENTS.md`.
+
+## Read next (progressive disclosure)
+
+1. `KNOWLEDGE-MAP.md`
+2. `{{NOW}}` — Current focus block
+3. `{{FINDINGS}}` — rollup
+4. `{{HISTORY_INDEX}}` — history index; newest entry in the current child

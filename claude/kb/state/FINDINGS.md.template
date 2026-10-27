@@ -1,0 +1,30 @@
+# FINDINGS — register (slim HOT tier)
+
+> Aggregates every finding from issues/reviews/audits into one closure-tracked list.
+> Status: OPEN | CLOSED | ACCEPTED. `rt?` = needs live validation (not just inspection).
+> Assign the next `F-NN` from the highest existing ID, including closed findings (never reuse);
+> move resolved → CLOSED with evidence; never delete a row.
+> **One line per finding here — Finding ≤ ~160 chars, Next step ≤ ~110.** Full narrative for every
+> row lives in `{{DETAILS}}` (search the `F-NN`; the `Detail` column says `DETAIL` when there is
+> more there). This file stays scannable.
+> **Size budget: ≤ 36 KB.** Narrative goes to the detail file, not here.
+> **Next free ID: F-1** (recompute from this file immediately before assigning — never from memory).
+> **⚠ ID collision hazard:** this register has no allocator. Two sessions running the same day WILL
+> pick the same `F-NN` unless each reads the register immediately before assigning (one writer).
+
+## OPEN
+
+| ID | Sev | rt? | Finding (one line) | Next step | Detail |
+|---|---|---|---|---|---|
+
+## CLOSED
+
+| ID | Sev | rt? | Finding (one line) | Closure evidence | Detail |
+|---|---|---|---|---|---|
+
+## Rollup
+
+- Open 0 (High 0) · Closed 0 · Highest ID none · Next free F-1
+- Open High IDs: none
+- Verify-then-close candidates: none
+- Dated reconciliation narratives: `{{DETAILS}}`; what happened when: `{{HISTORY_INDEX}}`.

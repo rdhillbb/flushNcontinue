@@ -1,0 +1,36 @@
+# Known Pitfalls — {{PROJECT}}
+
+> **Format:** one entry per pitfall. Severity → Symptom → Root cause → Mitigation → How we found it.
+> **Maintenance:** add a new entry when something bites you — a level-2 heading written exactly as
+> `## P-NN — Title` (never `### P-NN`) AND an Index row; the lint rejects a heading without its row.
+> Don't trim — entries decay naturally and the dates stay honest. Never edit an existing entry;
+> append a dated correction. Record both the symptom and the cause: symptoms usually point away
+> from causes. Never invent a cause: evidence must contain the claimed event; label reported events
+> when raw output is unavailable, and never cite a rule or an unrelated history entry as proof of a run.
+> **Companion (code-level production issues):** `{{MEMORY_DIR}}/issues/ISSUE-NNN_*.md` (outside the repo; Claude Code auto-memory).
+> **Next free ID: P-1** (recompute from the headings before assigning).
+
+---
+
+## Index — one line per pitfall (grep the P-NN for the full entry)
+
+| ID | Domain | Pitfall |
+|---|---|---|
+
+---
+
+<!-- Entry template — copy below the Index (directly after the previous lesson), replace NN, add the Index row:
+
+## P-NN — Short title
+
+**Severity:** High | Med | Low · **Date:** YYYY-MM-DD · **Domain:** deploy | database | email | frontend | tooling | review-process | security | kb/docs | general
+
+**Symptom:** what you saw.
+
+**Root cause:** what was actually wrong.
+
+**Mitigation:** what to do instead / what was changed.
+
+**How we found it:** the trigger, the command, the customer, the commit.
+
+-->

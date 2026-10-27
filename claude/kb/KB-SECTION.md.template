@@ -1,0 +1,50 @@
+<!-- KB-SECTION-BEGIN (the kbinit skill refreshes this block; edit ~/apps/factorymaterial/claude/kb/KB-SECTION.md.template, not the copy) -->
+## Session Start — the knowledge base (READ THIS FIRST)
+
+This repo has a tribal-knowledge base so a fresh session can continue with most of the previous session's context. It is maintained by the `checkpoint`, `flush` and `kbinit` skills (Claude Code: `/checkpoint`, `/flush`, `/kbinit`; Codex: `checkpoint`, `flush`, `kbinit` — same skill bodies, installed in both seats). Entry point and precedence: `KNOWLEDGE-MAP.md`; the checker (`scripts/kb/kb_tools.py`) reads the same paths from `state/kb-layout.json` — if the two disagree, reconcile them before writing. Every agent reads this section: Codex from `AGENTS.md`, Claude Code through the `@AGENTS.md` import in `CLAUDE.md`.
+
+**Order at session start:**
+
+1. `bash ~/bin/session_time.sh` — date, day of week, {{TIME_ZONE_NOTE}}.
+2. `{{BRIEF}}` — Claude Code's SessionStart hook injects it; Codex's SessionStart hook (`~/.codex/hooks.json`, when enabled) injects it too; any agent without a hook must `cat {{BRIEF}}` first. When the hook already put it in context, do not read it again. It holds the Live thread + session thread: task in progress, next step, decisions, open questions. If it is missing, run the `kbinit` skill (installs the KB) or the `flush` skill (rebuilds BRIEF).
+3. **Resume protocol:** restate the `## Live thread (checkpoint)` block in ≤ 5 lines, list the `## Alignment (answer before work starts)` questions as written, and ask ONCE: "No issues? Then I continue with <Next action>." "go" / "no issues" / "continue" = proceed; answers are applied first. If the section says `none`, ask only the continue line. These are the questions the operator used to ask by hand. A block written by the other seat (`Agent:` line) is normal; continue from it, do not restart.
+4. Precedence (which source wins) is `KNOWLEDGE-MAP.md` §2, the only copy. Read `KNOWLEDGE-MAP.md` when you update the KB, not at every start.
+5. Verify live before trusting any file: `bash scripts/kb/session_health.sh` (git state and remote drift, build, prod health, local services, BRIEF age, then the `kb_tools.py health` metadata; the SessionStart hooks run it; if its output is not in context, run it). **The live system wins over every file** (only the operator's latest explicit instruction ranks higher).
+6. Then read ONLY what the task router points to. `{{NOW}}` and `{{FINDINGS}}` are registers to grep by `F-NN` / topic, not to read end to end. **Before SQL, a deploy, a customer email, or a KB/tooling edit:** grep `{{CONTRADICTIONS}}` and the `{{PITFALLS}}` Index for that domain.
+
+**Continuous dialog — what a saved next step means:** the operator's latest explicit instruction determines the task. A saved next action in `{{BRIEF}}` is context, not new permission: do not restart work the operator stopped, repeat a recorded dead end, or resume an unrelated thread. Ask only when the current request leaves the next action or the authorization unclear.
+
+**Keep the thread alive during the session, not just at the end:**
+- `checkpoint` skill (~20 s) after every operator decision, every completed step, and before any long operation. It overwrites the `## Live thread (checkpoint)` block at the top of `{{BRIEF}}` — the operator's last instruction verbatim, what was in flight, next action, decisions, dead ends. Besides that block it may only (1) reset the BRIEF header to `Tree: verify with git status` and (2) append ` -> RESOLVED <date>: <answer>` to an Alignment question answered this session. Writing new Alignment questions, registers and history is `flush` only. A crash or compaction then loses nothing. After a compaction the SessionStart hook re-injects BRIEF, so a fresh checkpoint is what survives. Write it before any long step.
+- **Context thresholds:** 50% → checkpoint at every decision point. **62% → finish the step, `flush`, end the session** ("flushed at NN%, start a new session"). **70% is never crossed** (hallucination from ~72%). Above 60%: shorter answers, verify every claim. Compaction is a crash fallback only. Neither model can see its own context %: the operator reads it in the status bar and says "flush". Without that signal, checkpoint after every step and flush at every natural break and on "handoff".
+- `flush` skill = full KB reconcile, run inline, never delegated: `kb_tools.py snapshot` → edit the changed registers only → `append-history` (one dated entry per flush, newest first) → dispose of every item in the outgoing BRIEF's Next step / Open questions / Uncommitted lists (carried into the new BRIEF, moved to `{{NOW}}` open items, filed as `F-NN`, or written as "dropped: <why>" in the history entry; nothing vanishes silently) → rewrite BRIEF including `## Alignment (answer before work starts)` (1 to 5 one-line questions the next session cannot settle from files, or `none`; flush only) → `verify-flush` must PASS. Read BRIEF back and confirm task, next step, decisions with WHY, dead ends, open questions, uncommitted files. Then commit the KB files it wrote **by name** (`git add` each path — BRIEF, registers, history child, history index, layout sidecar — never `-A`/`.`) with message `docs(kb): flush <stamp>`; uncommitted handoffs have been lost to stashes and checkouts. **Never push** from the flush itself (a later regular push may carry the commit); neither `flush` nor `kbinit` authorizes a push or a deploy.
+
+**Where knowledge lives (one home per fact — point, don't copy):**
+
+| Question | File | Tier |
+|---|---|---|
+| Where did the last session stop? | `{{BRIEF}}` | HOT |
+| What is true right now? | `{{NOW}}` (freshness-stamped facts + one `## Current focus`) | HOT |
+| Which focus blocks were superseded? | `{{NOW_ARCHIVE}}` (verbatim, newest first; never edited) | COLD |
+| Which docs are known-stale? | `{{CONTRADICTIONS}}` (`C-NN`) | HOT |
+| Which findings are open? | `{{FINDINGS}}` (`F-NN`, one line each) → narrative in `{{DETAILS}}` | HOT / COLD |
+| What bit us before? | `{{PITFALLS}}` (`P-NN`, index at top) | COLD |
+| What happened, when? | the newest child listed in `{{HISTORY_INDEX}}` ({{HISTORY_NOTE}}) | WARM |
+| Standing operator rules / preferences | `{{MEMORY_DIR}}/MEMORY.md` — Claude Code auto-memory, outside the repo, **Claude only**. Codex has no auto-memory: `state/` and the history ledger are its memory, so a rule the other seat needs must also have a home in the repo | COLD |
+
+Retired entry point (do not resurrect): `zero.md` — pointer only, if present.
+
+**Health check:** `bash scripts/kb/kb_lint.sh` (wraps `python3 scripts/kb/kb_tools.py lint`) — sizes vs budget, next free `F-`/`P-`/`C-` IDs, BRIEF age, checkpoint age, dead pointers, secret hygiene, the `@AGENTS.md` import in `CLAUDE.md`. `verify-flush` runs it.
+
+---
+
+## History Log ({{HISTORY_DIR}}/) — write at the time of the event
+
+The newest quarter child listed in `{{HISTORY_INDEX}}` is the **append-only, chronological ledger** (newest entry at the top of `## Entries`). `{{HISTORY_INDEX}}` is only the index to the quarter children. State registers hold what is true now; the ledger holds what happened.
+
+**Write an entry when the event happens** (not batched at session end) for: production deployment, production error/incident, customer-impacting fix/refund/decision, major code change landing, monitoring/tooling/infra change, important operator decision. When unsure, record it. The `flush` skill adds the session-handoff entry on top of these.
+
+**Every entry:** Date/Time (state the zone) · Area · Event · Impact · Resolution · GitHub ref (commit hash + branch; if uncommitted say so) · Source (link the stronger doc instead of duplicating) · Follow-up.
+
+**Rules:** append, never overwrite; never prune or edit old entries (corrections are new entries); factual, dated, concise; link out rather than repeat. New quarter → new child listed in the index (`append-history` opens it). A child above ~300 KB gets a mid-quarter split; never delete. **Never write a secret's value into any KB file** — key name + "fetch live" only.
+<!-- KB-SECTION-END -->

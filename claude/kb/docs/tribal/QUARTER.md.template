@@ -1,0 +1,8 @@
+# {{PROJECT}} tribal knowledge — {{QUARTER}}
+
+Append-only, newest entry at the TOP of `## Entries`. Never edit, reorder or move existing entries;
+they stay byte-identical and corrections are new entries. Entry format, split rule and the list of
+children: `{{HISTORY_INDEX}}`. Every `flush` adds one dated handoff entry here via
+`kb_tools.py append-history`; event entries are written by hand when the event happens.
+
+## Entries
