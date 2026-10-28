@@ -1,12 +1,12 @@
-<!-- KB-SECTION-BEGIN (the kbinit skill refreshes this block; edit ~/apps/factorymaterial/claude/kb/KB-SECTION.md.template, not the copy) -->
+<!-- KB-SECTION-BEGIN (the kbinit skill refreshes this block; edit .claude/skills/kbinit/templates/KB-SECTION.md.template, not the copy) -->
 ## Session Start — the knowledge base (READ THIS FIRST)
 
 This repo has a tribal-knowledge base so a fresh session can continue with most of the previous session's context. It is maintained by the `checkpoint`, `flush` and `kbinit` skills (Claude Code: `/checkpoint`, `/flush`, `/kbinit`; Codex: `checkpoint`, `flush`, `kbinit` — same skill bodies, installed in both seats). Entry point and precedence: `KNOWLEDGE-MAP.md`; the checker (`scripts/kb/kb_tools.py`) reads the same paths from `state/kb-layout.json` — if the two disagree, reconcile them before writing. Every agent reads this section: Codex from `AGENTS.md`, Claude Code through the `@AGENTS.md` import in `CLAUDE.md`.
 
 **Order at session start:**
 
-1. `bash ~/bin/session_time.sh` — date, day of week, {{TIME_ZONE_NOTE}}.
-2. `{{BRIEF}}` — Claude Code's SessionStart hook injects it; Codex's SessionStart hook (`~/.codex/hooks.json`, when enabled) injects it too; any agent without a hook must `cat {{BRIEF}}` first. When the hook already put it in context, do not read it again. It holds the Live thread + session thread: task in progress, next step, decisions, open questions. If it is missing, run the `kbinit` skill (installs the KB) or the `flush` skill (rebuilds BRIEF).
+1. `bash .claude/hooks/session_time.sh` — date, day of week, {{TIME_ZONE_NOTE}}.
+2. `{{BRIEF}}` — the SessionStart hook (`.claude/hooks/session-start.sh`) injects it; an agent without the hook must `cat {{BRIEF}}` first. When the hook already put it in context, do not read it again. It holds the Live thread + session thread: task in progress, next step, decisions, open questions. If it is missing, run the `kbinit` skill (installs the KB) or the `flush` skill (rebuilds BRIEF).
 3. **Resume protocol:** restate the `## Live thread (checkpoint)` block in ≤ 5 lines, list the `## Alignment (answer before work starts)` questions as written, and ask ONCE: "No issues? Then I continue with <Next action>." "go" / "no issues" / "continue" = proceed; answers are applied first. If the section says `none`, ask only the continue line. These are the questions the operator used to ask by hand. A block written by the other seat (`Agent:` line) is normal; continue from it, do not restart.
 4. Precedence (which source wins) is `KNOWLEDGE-MAP.md` §2, the only copy. Read `KNOWLEDGE-MAP.md` when you update the KB, not at every start.
 5. Verify live before trusting any file: `bash scripts/kb/session_health.sh` (git state and remote drift, build, prod health, local services, BRIEF age, then the `kb_tools.py health` metadata; the SessionStart hooks run it; if its output is not in context, run it). **The live system wins over every file** (only the operator's latest explicit instruction ranks higher).

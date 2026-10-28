@@ -34,17 +34,17 @@
 #   g. closing check: python3 scripts/kb/kb_tools.py --repo <repo> lint (status + error count).
 # Registers, history, BRIEF and everything else are never touched. Never runs a git
 # command that modifies anything, never commits. Exit 0 always. bash 3.2 compatible.
-# Source of the files it installs: <this script's dir>/../claude/kb (templates, scripts/kb, scripts/hooks)
-# plus <this script's dir>/kb_tools.py (the master engine). ~/bin/kb_upgrade.sh is a symlink to this file.
+# Source of the files it installs: <this script's dir>/../templates (templates, scripts/kb, scripts/hooks)
+# plus <this script's dir>/kb_tools.py (the master engine). Installed at .claude/skills/kbinit/tools/kb_upgrade.sh.
 
-# ---- locate the source tree (follow the ~/bin symlink to the real script) --------
+# ---- locate the source tree (follows a symlink to the real script if there is one) --------
 SELF="$0"
 while [ -L "$SELF" ]; do
   t=$(readlink "$SELF")
   case "$t" in /*) SELF="$t" ;; *) SELF="$(dirname "$SELF")/$t" ;; esac
 done
 SCRIPT_DIR="$(cd "$(dirname "$SELF")" && pwd -P)"
-TPL="$(cd "$SCRIPT_DIR/../claude/kb" 2>/dev/null && pwd -P)"
+TPL="$(cd "$SCRIPT_DIR/../templates" 2>/dev/null && pwd -P)"
 MASTER_TOOLS="$SCRIPT_DIR/kb_tools.py"
 
 DRY=0; ALL=0; FORCE_LINT=0
@@ -61,7 +61,7 @@ $a" ;;
   esac
 done
 if [ -z "$TPL" ] || [ ! -d "$TPL" ]; then
-  echo "source tree missing: $SCRIPT_DIR/../claude/kb (nothing done)"; exit 0
+  echo "source tree missing: $SCRIPT_DIR/../templates (nothing done)"; exit 0
 fi
 if [ ! -f "$MASTER_TOOLS" ]; then
   echo "master kb_tools.py missing: $MASTER_TOOLS (nothing done)"; exit 0

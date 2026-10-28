@@ -969,7 +969,7 @@ def main():
     parser.add_argument("--repo", type=Path, default=Path.cwd())
     sub = parser.add_subparsers(dest="command", required=True)
     init = sub.add_parser("init")
-    default_templates = Path(os.environ.get("KB_TEMPLATES", str(Path.home()/"apps/factorymaterial/claude/kb")))
+    default_templates = Path(os.environ.get("KB_TEMPLATES", str(Path.cwd()/".claude/skills/kbinit/templates")))
     init.add_argument("--templates", type=Path, default=default_templates)
     init.add_argument("--project")
     init.add_argument("--timezone", default="UTC")

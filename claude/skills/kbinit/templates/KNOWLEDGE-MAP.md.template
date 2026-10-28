@@ -68,7 +68,7 @@ Context thresholds (50 / 62 / 70%) and who watches the meter: `AGENTS.md` Sessio
 
 ## 5. Knowledge Base Update Procedure (`flush` — before a context reset, handoff, or when findings accumulate)
 
-The procedure is the `flush` skill (`~/.claude/skills/flush/SKILL.md`; the Codex copy is synced by `~/bin/sync_kb_skills.sh`). It is the only copy; do not restate it here.
+The procedure is the `flush` skill (`.claude/skills/flush/SKILL.md`). It is the only copy; do not restate it here.
 
 ## 6. Maintenance discipline and size budgets
 

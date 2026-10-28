@@ -14,10 +14,9 @@ at the end and cannot help mid-session. The `checkpoint` skill (Claude Code: `/c
 Codex: `checkpoint`) writes the live thread to disk in seconds so a fresh session (or a
 post-compaction you) can pick up the exact sentence.
 
-This skill is **universal**: the same body runs in both seats. Source of truth:
-`~/apps/factorymaterial/claude/skills/checkpoint/SKILL.md`. The Claude seat
-(`~/.claude/skills/checkpoint`) is a symlink to the source; `~/bin/sync_kb_skills.sh` copies it
-into the Codex seat (`~/.codex/skills/checkpoint`). Edit the source, then sync.
+Source of truth: the flushNcontinue repo (`claude/skills/checkpoint/SKILL.md`). The installer
+copies it to `.claude/skills/checkpoint/`. Never edit the installed copy: change the repo,
+then re-run `install.sh`.
 
 **Precondition.** The repo must have `state/BRIEF.md` (a knowledge-base repo). If it is absent,
 say so in one line and stop. Do not create a KB, a BRIEF, or any other file (that is the
@@ -91,16 +90,14 @@ Nothing else. No summary of the session, no restating the block.
 - (a) after each operator decision,
 - (b) after each completed step of a multi-step task,
 - (c) before any long operation (build, factory run, large review, deploy, big read),
-- (d) at 62% context, right before `flush` (and from 50% on, at every decision point; see the
-  Context Management thresholds in the global operating file: `~/.claude/CLAUDE.md` for Claude
-  Code, `~/.codex/AGENTS.md` for Codex),
+- (d) at 62% context, right before `flush` (and from 50% on, at every decision point; never past 70%),
 - (e) whenever the operator says "checkpoint", "save the thread", "mark where we are".
 
 ## Resume protocol (the other half)
 
 In a fresh session (the normal path: the previous session ended with a flush at 62%) or after a
 compaction (crash fallback only), get `state/BRIEF.md` in front of you first: Claude Code's
-SessionStart hook injects it, and so does Codex's (`~/.codex/hooks.json`). Do not read it again when it
+SessionStart hook (`.claude/hooks/session-start.sh`) injects it. Do not read it again when it
 is already in context; an agent without a hook must `cat state/BRIEF.md` first.
 Then:
 

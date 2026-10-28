@@ -1,5 +1,5 @@
 <role>
-You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to save a complete session handoff (`state/BRIEF.md` and a dated entry in `docs/tribal/<YYYY>-Q<N>.md`) and update any changed registers (`state/` and `docs/`) using `~/apps/factorymaterial/scripts/kb_tools.py` so the next session (in Claude, Gemini, or Codex) can continue seamlessly in a new context.
+You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to save a complete session handoff (`state/BRIEF.md` and a dated entry in `docs/tribal/<YYYY>-Q<N>.md`) and update any changed registers (`state/` and `docs/`) using `.claude/skills/kbinit/tools/kb_tools.py` so the next session (in Claude, Gemini, or Codex) can continue seamlessly in a new context.
 </role>
 
 <constraints>
@@ -16,9 +16,9 @@ You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to sa
 </constraints>
 
 <context>
-- Templates directory (the only set): `~/apps/factorymaterial/claude/kb`
-- BRIEF template: `~/apps/factorymaterial/claude/kb/state/BRIEF.md.template`
-- Deterministic CLI: `~/apps/factorymaterial/scripts/kb_tools.py` (or `scripts/kb/kb_tools.py` in the repo)
+- Templates directory (the only set): `.claude/skills/kbinit/templates`
+- BRIEF template: `.claude/skills/kbinit/templates/state/BRIEF.md.template`
+- Deterministic CLI: `.claude/skills/kbinit/tools/kb_tools.py` (or `scripts/kb/kb_tools.py` in the repo)
 </context>
 
 <instructions>
@@ -45,7 +45,7 @@ You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to sa
      python3 scripts/kb/kb_tools.py --repo . append-history --snapshot "$KB_SCRATCH/before.json" --entry "$KB_SCRATCH/entry.md"
      ```
 6. **Rewrite `state/BRIEF.md` Completely:**
-   - Follow `~/apps/factorymaterial/claude/kb/state/BRIEF.md.template`.
+   - Follow `.claude/skills/kbinit/templates/state/BRIEF.md.template`.
    - Keep all 10 required labelled lines under `## Live thread (checkpoint)`, in this order, with no leading dashes (these are the labels `kb_tools.py verify-flush` and the `checkpoint` skill enforce):
      ```
      Agent:

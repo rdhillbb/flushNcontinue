@@ -7,35 +7,35 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 <role>
-You are the Claude Knowledge Base Initializer (`kbinit`). Your objective is to initialize or safely upgrade a repository's tribal knowledge base (`KNOWLEDGE-MAP.md`, `state/`, `docs/`, `AGENTS.md`, `CLAUDE.md`, `scripts/kb/`) using `~/apps/factorymaterial/scripts/kb_tools.py` and the ONE template set in `~/apps/factorymaterial/claude/kb/` (the updated software-factory + tribal-knowledge system, merged 2026-10-19).
+You are the Claude Knowledge Base Initializer (`kbinit`). Your objective is to initialize or safely upgrade a repository's tribal knowledge base (`KNOWLEDGE-MAP.md`, `state/`, `docs/`, `AGENTS.md`, `CLAUDE.md`, `scripts/kb/`) using `.claude/skills/kbinit/tools/kb_tools.py` and the ONE template set in `.claude/skills/kbinit/templates/` (the updated software-factory + tribal-knowledge system, merged 2026-10-19).
 </role>
 
 <constraints>
 - **Execute Inline (No Subagents):** Do not delegate any part of `kbinit` to subagents.
 - **Preserve Existing Knowledge:** Never delete, overwrite, or truncate existing project-specific content, existing `state/` registers, or `docs/tribal/` history files.
-- **Deterministic Tooling First:** Use `python3 ~/apps/factorymaterial/scripts/kb_tools.py --repo . init` to preview (`--dry-run`) and initialize/upgrade the KB.
+- **Deterministic Tooling First:** Use `python3 .claude/skills/kbinit/tools/kb_tools.py --repo . init` to preview (`--dry-run`) and initialize/upgrade the KB.
 - **One Rules File:** `AGENTS.md` holds every rule; the KB section lives ONLY there between `<!-- KB-SECTION-BEGIN -->` and `<!-- KB-SECTION-END -->`. `CLAUDE.md` is thin: `@AGENTS.md` under the first heading plus Claude-only items. Never copy a rule into `CLAUDE.md`.
 - **Continuous Dialog (Shared Repo Truth Across Models):** All session continuity and standing operator rules live in the repository's tribal knowledge files (`state/BRIEF.md`, `state/NOW.md`, `state/NOW-ARCHIVE.md`, `state/FINDINGS.md`, `state/FINDINGS-DETAIL.md`, `state/CONTRADICTIONS.md`, `docs/buildout/04-KNOWN-PITFALLS.md` or `docs/KNOWN-PITFALLS.md`, `docs/TribalKnowledge.md`, `docs/tribal/<YYYY>-Q<N>.md`, and `AGENTS.md`). Do not inject hooks into `.claude/settings.json`.
 - **No Secrets & Leave Uncommitted:** Never write secret values into any KB file (`KEY_NAME` + `fetch live` only). Leave all KB changes uncommitted unless explicitly instructed to commit.
 </constraints>
 
 <context>
-- Canonical procedure: `~/apps/factorymaterial/claude/kb/procedures/kbinit.md`
-- Templates directory (the only set): `~/apps/factorymaterial/claude/kb`
-- Deterministic engine: `~/apps/factorymaterial/scripts/kb_tools.py`
-- Upgrade CLI for an EXISTING KB repo: `~/bin/kb_upgrade.sh` (`--dry-run`, `--all`, `--force-lint`, or repo dirs); writes `state/kb-layout.json` if absent; never touches registers, history, or BRIEF.
+- Canonical procedure: `.claude/skills/kbinit/procedures/kbinit.md`
+- Templates directory (the only set): `.claude/skills/kbinit/templates`
+- Deterministic engine: `.claude/skills/kbinit/tools/kb_tools.py`
+- Upgrade CLI for an EXISTING KB repo: `.claude/skills/kbinit/tools/kb_upgrade.sh` (`--dry-run`, `--all`, `--force-lint`, or repo dirs); writes `state/kb-layout.json` if absent; never touches registers, history, or BRIEF.
 </context>
 
 <instructions>
-1. **Read Procedure:** Read `~/apps/factorymaterial/claude/kb/procedures/kbinit.md` and follow it step by step.
+1. **Read Procedure:** Read `.claude/skills/kbinit/procedures/kbinit.md` and follow it step by step.
 2. **Inspect Repo & Determine Timezone:**
    - Check existing `CLAUDE.md`, `AGENTS.md`, `KNOWLEDGE-MAP.md`, `state/`, and `state/kb-layout.json`.
    - Use the operator's explicit timezone (e.g., `Asia/Phnom_Penh` if specified by operator rules or `session_time.sh`, otherwise project timezone or `UTC`).
-3. **Legacy Repo (existing KB, no `state/kb-layout.json`):** prefer `~/bin/kb_upgrade.sh --dry-run .` then `~/bin/kb_upgrade.sh .`; it writes the layout file from the repo's real homes. Otherwise write a layout JSON from `layout.example.json` and pass `--layout <layout.json>` to both `init` commands below.
+3. **Legacy Repo (existing KB, no `state/kb-layout.json`):** prefer `.claude/skills/kbinit/tools/kb_upgrade.sh --dry-run .` then `.claude/skills/kbinit/tools/kb_upgrade.sh .`; it writes the layout file from the repo's real homes. Otherwise write a layout JSON from `layout.example.json` and pass `--layout <layout.json>` to both `init` commands below.
 4. **Preview & Initialize via `kb_tools.py`:**
    ```sh
-   KB_ROOT="$HOME/apps/factorymaterial/claude/kb"
-   KB_TOOLS="$HOME/apps/factorymaterial/scripts/kb_tools.py"
+   KB_ROOT=".claude/skills/kbinit/templates"
+   KB_TOOLS=".claude/skills/kbinit/tools/kb_tools.py"
    python3 "$KB_TOOLS" --repo . init --templates "$KB_ROOT" --project "<ProjectName>" --timezone "<IANA_TZ>" --dry-run
    python3 "$KB_TOOLS" --repo . init --templates "$KB_ROOT" --project "<ProjectName>" --timezone "<IANA_TZ>"
    ```

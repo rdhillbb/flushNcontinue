@@ -11,8 +11,8 @@ import unittest
 from unittest import mock
 from zoneinfo import ZoneInfo
 
-TEMPLATES = Path(__file__).resolve().parents[2] / "claude" / "kb"
-SCRIPTS = Path(__file__).resolve().parents[1]
+TEMPLATES = Path(__file__).resolve().parents[1] / "claude" / "skills" / "kbinit" / "templates"
+SCRIPTS = Path(__file__).resolve().parents[1] / "claude" / "skills" / "kbinit" / "tools"
 spec = importlib.util.spec_from_file_location("kb_tools", SCRIPTS / "kb_tools.py")
 kb = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(kb)

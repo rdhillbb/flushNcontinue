@@ -1,14 +1,13 @@
-# claude/kb/: the ONE tribal-knowledge template set (`~/apps/factorymaterial/claude/kb/`)
+# kbinit templates (`.claude/skills/kbinit/templates/`)
 
-Part of the updated software factory + tribal-knowledge system (`~/apps/factorymaterial`).
-This is the only template set.
+The one tribal-knowledge template set, installed with the flushNcontinue skills.
 
-Installed into a project by the `kbinit` skill (Claude Code: `/kbinit`; Codex: `kbinit`),
-which runs `kb_tools.py init`. Existing KB repos are upgraded with `~/bin/kb_upgrade.sh`.
+Installed into a project by the `/kbinit` skill,
+which runs `kb_tools.py init`. Existing KB repos are upgraded with `.claude/skills/kbinit/tools/kb_upgrade.sh`.
 
 ## Engine and placeholders
 
-Engine: `~/apps/factorymaterial/scripts/kb_tools.py` (stdlib only, linked from `~/bin`).
+Engine: `.claude/skills/kbinit/tools/kb_tools.py` (Python standard library only).
 
 | Subcommand | Does |
 |---|---|
@@ -27,12 +26,11 @@ Placeholders the engine fills: `{{PROJECT}}` `{{DATE}}` `{{STAMP}}` `{{QUARTER}}
 
 | Seat | Operating file (repo) | Global operating file | Skills dir | BRIEF at session start |
 |---|---|---|---|---|
-| Claude Code | `CLAUDE.md` (thin: `@AGENTS.md` + Claude-only items) | `~/.claude/CLAUDE.md` | `~/.claude/skills/` (symlinks) | injected by the SessionStart hook |
-| Codex | `AGENTS.md` (the single rules file) | `~/.codex/AGENTS.md` | `~/.codex/skills/` (copies) | `cat state/BRIEF.md` (no hooks) |
+| Claude Code | `CLAUDE.md` (thin: `@AGENTS.md` + Claude-only items) | `~/.claude/CLAUDE.md` | `.claude/skills/` (copies) | injected by the SessionStart hook |
 
 The skills `checkpoint`, `flush`, `kbinit` have one source each: `../skills/<name>/SKILL.md`.
-`~/bin/sync_kb_skills.sh` copies them into the Codex seat. The Claude seat is symlinks, so nothing
-is written there. `--check` reports drift and exits 1. Edit the source, then sync. Never edit a seat copy.
+`install.sh` copies them into `.claude/skills/`; `install.sh --check` reports drift. Edit the
+source in the repo, then re-run the installer. Never edit an installed copy.
 
 ## One rules file per repo (layout since 2026-10-18)
 

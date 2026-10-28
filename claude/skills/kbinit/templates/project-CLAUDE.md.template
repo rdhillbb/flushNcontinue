@@ -1,0 +1,12 @@
+# CLAUDE.md — {{PROJECT}}
+@AGENTS.md
+
+`AGENTS.md` (imported above) is the single source of rules for every agent. This file holds ONLY Claude Code items. Never copy a rule here; edit `AGENTS.md`.
+
+## Claude Code only
+
+- **Hooks:** the SessionStart hook (`.claude/hooks/session-start.sh`, wired in `.claude/settings.json`) injects `{{BRIEF}}` and runs `bash scripts/kb/session_health.sh` when it is executable. The PreCompact hook prints the `## Live thread (checkpoint)` block of `{{BRIEF}}` into the compaction summary. The PreToolUse Bash guard (scripts/hooks/pretooluse-guard.sh, copied from the template set's scripts/hooks/ and wired into `.claude/settings.json` from settings.pretooluse.json) blocks `psql -v ... -c`, bare `git stash` in a worktree and logs under `/tmp`.
+- **KB skills:** `/checkpoint` (live-thread block in `{{BRIEF}}`), `/flush` (full KB reconcile), `/kbinit` (install or refresh the KB). Run `/flush` inline in the main conversation; never delegate register writes to a subagent.
+- **Auto-memory:** `{{MEMORY_DIR}}/MEMORY.md` (outside the repo; Codex can read it but has no auto-memory). Standing operator rules and preferences live there; a rule the Codex seat needs must also have a home in the repo.
+- **Subagents (`.claude/agents/`):** <fill: none yet; list each agent with one line on when to use it>.
+- **Slash skills:** repo skills in `.claude/skills/`: <fill: none yet>; global ones (`/checkpoint`, `/flush`, `/kbinit`, `/projectsetup`) in `.claude/skills/`.

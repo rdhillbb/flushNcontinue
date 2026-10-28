@@ -1,1 +1,0 @@
-/Users/randolphhill/apps/factorymaterial/scripts/kb_lint.sh

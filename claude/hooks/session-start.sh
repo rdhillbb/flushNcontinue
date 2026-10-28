@@ -4,6 +4,7 @@
 # last one stopped, then prints the time reference and runs the repo's health check.
 # Runs in the repo Claude was started in. Read-only. macOS and Linux.
 
+cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 CP="/checkpoint"; FL="/flush"
 
 mtime() { date -r "$1" '+%Y-%m-%d %H:%M' 2>/dev/null || echo unknown; }
@@ -21,6 +22,6 @@ elif [ -f KNOWLEDGE-MAP.md ]; then
   echo '=== END ACTIVATION ==='
 fi
 
-[ -x "$HOME/bin/session_time.sh" ] && bash "$HOME/bin/session_time.sh"
-[ -x scripts/kb/session_health.sh ] && bash scripts/kb/session_health.sh
+[ -f ".claude/hooks/session_time.sh" ] && bash ".claude/hooks/session_time.sh"
+[ -f scripts/kb/session_health.sh ] && bash scripts/kb/session_health.sh
 exit 0

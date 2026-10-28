@@ -15,6 +15,8 @@ installer never overwrites it. Project rules live in each repo's AGENTS.md / CLA
 - `/checkpoint` after every decision and every finished step.
 - Context: at 50% checkpoint at every decision point; at 62% finish the step, run `/flush`,
   and end the session ("flushed at NN%, start a new session"); never past 70%.
+  Claude cannot see its own context %. I read it in the status bar and say "flush";
+  until then, checkpoint after every finished step.
 - `/flush` commits the KB files by name. It never pushes.
 
 ## Working rules

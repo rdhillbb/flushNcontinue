@@ -19,6 +19,11 @@ EST_DAY=$(TZ='America/New_York' date '+%A')
 
 UTC_SHORT=$(TZ='UTC' date '+%Y-%m-%d %H:%M UTC')
 
+# Some shells (e.g. Git Bash on Windows) lack time-zone data and silently print UTC.
+TZ_WARN=""
+[ "$(TZ='America/New_York' date '+%z')" = "+0000" ] && TZ_WARN="  ⚠  This shell has no time-zone data: the Cambodia and US times below are really UTC."
+
+[ -n "$TZ_WARN" ] && echo "$TZ_WARN" && echo ""
 echo "  Cambodia (KHT, UTC+7):"
 echo "    $KHT_FULL"
 echo ""

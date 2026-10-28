@@ -7,13 +7,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 <role>
-You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to reconcile the current repository's tribal knowledge base (`state/BRIEF.md`, `docs/tribal/<YYYY>-Q<N>.md`, and changed registers in `state/` and `docs/`) using `~/apps/factorymaterial/scripts/kb_tools.py` so a fresh session (in Claude, Gemini, or Codex) can resume the dialog seamlessly with no loss of context.
+You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to reconcile the current repository's tribal knowledge base (`state/BRIEF.md`, `docs/tribal/<YYYY>-Q<N>.md`, and changed registers in `state/` and `docs/`) using `.claude/skills/kbinit/tools/kb_tools.py` so a fresh session (in Claude, Gemini, or Codex) can resume the dialog seamlessly with no loss of context.
 </role>
 
 <constraints>
 - **Execute Inline (No Subagents):** Do not delegate any part of `flush` to subagents.
 - **Both Mandatory Handoff Outputs:** Every distinct flush must both:
-  1. Prepend one dated history entry to the current quarter ledger via `python3 ~/apps/factorymaterial/scripts/kb_tools.py --repo . append-history`.
+  1. Prepend one dated history entry to the current quarter ledger via `python3 .claude/skills/kbinit/tools/kb_tools.py --repo . append-history`.
   2. Completely rewrite `state/BRIEF.md` (`<= 8192` bytes; `## Live thread (checkpoint)` `<= 1536` bytes) keeping all 10 Live thread labelled lines, the `## Alignment (answer before work starts)` section (1 to 5 one-line questions the next session cannot settle from files, or the single line `none`; flush is its only writer; `verify-flush` requires it), and the `## Session thread` sections.
 - **Deliverable Calibration:** Match the length of written KB entries to what the task needs: state facts, exact `WHY` triggers, and pointers concisely without padding or boilerplate.
 - **Immutable History & Archives:** Never edit, overwrite, or delete old entries in `docs/tribal/<YYYY>-Q<N>.md`, `state/NOW-ARCHIVE.md` (or `docs/tribal/NOW-focus-archive-*.md`), or existing narratives in `state/FINDINGS-DETAIL.md`.
@@ -24,19 +24,19 @@ You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to re
 </constraints>
 
 <context>
-- Canonical procedure: `~/apps/factorymaterial/claude/kb/procedures/flush.md`
-- Templates directory (the only set): `~/apps/factorymaterial/claude/kb`
-- BRIEF template: `~/apps/factorymaterial/claude/kb/state/BRIEF.md.template`
-- Deterministic CLI: `~/apps/factorymaterial/scripts/kb_tools.py`
+- Canonical procedure: `.claude/skills/flush/procedures/flush.md`
+- Templates directory (the only set): `.claude/skills/kbinit/templates`
+- BRIEF template: `.claude/skills/kbinit/templates/state/BRIEF.md.template`
+- Deterministic CLI: `.claude/skills/kbinit/tools/kb_tools.py`
 </context>
 
 <instructions>
-0. **Precondition (layout):** if `state/kb-layout.json` is missing, run `~/bin/kb_upgrade.sh .` (it writes `state/kb-layout.json` from the repo's real homes), or copy `~/apps/factorymaterial/claude/kb/layout.example.json` to `state/kb-layout.json` and fill in the repo's real homes, project and timezone; then continue (do not flush by hand).
-1. **Read Procedure:** Read `~/apps/factorymaterial/claude/kb/procedures/flush.md` and follow it step by step.
+0. **Precondition (layout):** if `state/kb-layout.json` is missing, run `.claude/skills/kbinit/tools/kb_upgrade.sh .` (it writes `state/kb-layout.json` from the repo's real homes), or copy `.claude/skills/kbinit/templates/layout.example.json` to `state/kb-layout.json` and fill in the repo's real homes, project and timezone; then continue (do not flush by hand).
+1. **Read Procedure:** Read `.claude/skills/flush/procedures/flush.md` and follow it step by step.
 2. **Take Before-Snapshot:**
    ```sh
    KB_SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/kb-flush.XXXXXX")"
-   python3 ~/apps/factorymaterial/scripts/kb_tools.py --repo . snapshot --out "$KB_SCRATCH/before.json"
+   python3 .claude/skills/kbinit/tools/kb_tools.py --repo . snapshot --out "$KB_SCRATCH/before.json"
    ```
 3. **Update Changed Registers Only (`state/NOW.md`, `state/FINDINGS.md`, `state/FINDINGS-DETAIL.md`, `state/CONTRADICTIONS.md`, pitfalls):**
    - If `## Current focus` in `state/NOW.md` changed, archive the old `## Current focus` section verbatim into `now_archive` before replacing it.
@@ -45,13 +45,13 @@ You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to re
 5. **Append Dated History Entry & Rewrite `state/BRIEF.md`:**
    - Write the session summary to `"$KB_SCRATCH/entry.md"` and run:
      ```sh
-     python3 ~/apps/factorymaterial/scripts/kb_tools.py --repo . append-history --snapshot "$KB_SCRATCH/before.json" --entry "$KB_SCRATCH/entry.md"
+     python3 .claude/skills/kbinit/tools/kb_tools.py --repo . append-history --snapshot "$KB_SCRATCH/before.json" --entry "$KB_SCRATCH/entry.md"
      ```
-   - Rewrite `state/BRIEF.md` following `~/apps/factorymaterial/claude/kb/state/BRIEF.md.template`: the 10 `## Live thread (checkpoint)` labelled lines (`Agent:`, `Task:`, `Last operator instruction (verbatim, short):`, `I was doing:`, `Next action:`, `Decisions this session (with WHY):`, `Dead ends tried:`, `Open question for operator:`, `Uncommitted:`, `Context at checkpoint:`), then `## Alignment (answer before work starts)`, then `## Session thread`, `## Current state`, `## Read next`.
+   - Rewrite `state/BRIEF.md` following `.claude/skills/kbinit/templates/state/BRIEF.md.template`: the 10 `## Live thread (checkpoint)` labelled lines (`Agent:`, `Task:`, `Last operator instruction (verbatim, short):`, `I was doing:`, `Next action:`, `Decisions this session (with WHY):`, `Dead ends tried:`, `Open question for operator:`, `Uncommitted:`, `Context at checkpoint:`), then `## Alignment (answer before work starts)`, then `## Session thread`, `## Current state`, `## Read next`.
    - `## Alignment (answer before work starts)` sits directly after the Live thread block. Write 1 to 5 numbered questions, each one line, each answerable with yes/no or a short fact, covering only what the next session cannot settle from files: an assumption you made, a step left half done, a choice the operator has not made, a scope doubt. If nothing is open, write the single line `none`. These are the handoff questions the operator used to ask by hand; the next session's resume protocol lists them and asks once "No issues? Then I continue with <Next action>."
 6. **Verify Flush & Read Back `state/BRIEF.md`:**
    ```sh
-   python3 ~/apps/factorymaterial/scripts/kb_tools.py --repo . verify-flush --snapshot "$KB_SCRATCH/before.json"
+   python3 .claude/skills/kbinit/tools/kb_tools.py --repo . verify-flush --snapshot "$KB_SCRATCH/before.json"
    ```
    `verify-flush` already runs the KB lint (`kb_tools.py lint`; `bash scripts/kb/kb_lint.sh` is the same lint with `--text` output), so no separate lint run is needed. Fix any reported errors until `verify-flush` outputs `"status": "PASS"`.
 7. **Commit by name** (only after `verify-flush` PASSES): `git add <each KB path written this flush>` (list them explicitly — `state/BRIEF.md`, every register edited in step 3, the history child and index, `state/kb-layout.json` when changed; never `-A` or `.`). `git diff --cached --name-only` must list only those paths; if another path is already staged, use the pathspec form `git commit -m 'docs(kb): flush <stamp>' -- <paths>` so nothing else is swept in. Otherwise `git commit -m 'docs(kb): flush <stamp>'` (`<stamp>` = this entry's date and time). Never push. If the pre-commit hook blocks (credential pattern), fix the file, never bypass (`--no-verify` is forbidden).
