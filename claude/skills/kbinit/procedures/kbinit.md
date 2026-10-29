@@ -22,7 +22,7 @@ You are the Claude Knowledge Base Initializer (`kbinit`). Your objective is to i
 <instructions>
 1. **Inspect Existing Repo State:**
    - Inspect existing `CLAUDE.md`, `AGENTS.md`, `KNOWLEDGE-MAP.md`, `state/BRIEF.md`, `state/kb-layout.json`, and the actual knowledge homes on disk. Do not run the project's application or fetch Git remotes to initialize documentation.
-   - Determine the timezone: use the operator's explicit timezone choice (`Asia/Phnom_Penh` if specified by `session_time.sh` / operator rules, or the project's documented IANA timezone; fallback to `UTC` and report if neither exists).
+   - Determine the timezone: the `My time zone:` line in the user's `~/.claude/CLAUDE.md`, else the project's documented IANA timezone, else ask the user once (fallback `UTC`, and report it). Never take it from `session_time.sh`: its banner always shows Cambodia and US Eastern.
 2. **Legacy Repo: Get a Layout File First:**
    - An existing KB without `state/kb-layout.json` is a legacy repo. Prefer `.claude/skills/kbinit/tools/kb_upgrade.sh --dry-run .` then `.claude/skills/kbinit/tools/kb_upgrade.sh .`; it derives the homes from the repo's existing files and writes `state/kb-layout.json`.
    - If you run `init` directly instead, write a layout JSON matching the actual homes (follow `layout.example.json`; custom paths such as `docs/KNOWN-PITFALLS.md` or `docs/tribal/NOW-focus-archive-2026-09-07.md`) and pass `--layout <path>` to `init`.

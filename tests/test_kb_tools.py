@@ -542,17 +542,27 @@ class KBTests(unittest.TestCase):
         result = self.lint()   # temp dir is not a repository
         self.assertIsNone(result["freshness"]["last_commit"])
         self.assertIsNone(result["freshness"]["uncommitted_paths"])
+        head_files = ""
         def fake_git(command, **kwargs):
             self.assertEqual(command[0], "git")
-            self.assertIn(command[1], ("log", "status"))
+            self.assertIn(command[1], ("log", "status", "diff-tree"))
             self.assertEqual(kwargs["timeout"], 5)
-            out = "abc1234\x00commit message\x002099-01-01 00:00:00 +0000\x004070908800\n" if command[1] == "log" else " M a.md\n?? b.md\n"
+            if command[1] == "log":
+                out = "abc1234\x00commit message\x002099-01-01 00:00:00 +0000\x004070908800\n"
+            elif command[1] == "diff-tree":
+                out = head_files
+            else:
+                out = " M a.md\n?? b.md\n"
             return subprocess.CompletedProcess(command, 0, out, "")
         with mock.patch.object(kb.subprocess, "run", side_effect=fake_git):
             result = self.lint()
         self.assertEqual(result["freshness"]["last_commit"], "abc1234 commit message")
         self.assertEqual(result["freshness"]["uncommitted_paths"], 2)
         self.assertTrue(any("older than the last commit" in w for w in result["warnings"]), result["warnings"])
+        head_files = "state/BRIEF.md\n"   # the flush commit itself carries BRIEF: no warning
+        with mock.patch.object(kb.subprocess, "run", side_effect=fake_git):
+            result = self.lint()
+        self.assertFalse(any("older than the last commit" in w for w in result["warnings"]), result["warnings"])
 
     def test_lint_dead_pointers_cover_more_prefixes_globs_placeholders_and_home_paths(self):
         self.init()

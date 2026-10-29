@@ -32,7 +32,7 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   # remote drift: fetch, then compare HEAD with its upstream (or the remote default branch)
   remote=$(git remote 2>/dev/null | head -1)
   if [ -n "$remote" ]; then
-    stale=""; git fetch -q "$remote" 2>/dev/null || stale=" (fetch failed — offline? comparing against the last fetch)"
+    stale=""; GIT_TERMINAL_PROMPT=0 GCM_INTERACTIVE=never git -c credential.interactive=false fetch -q "$remote" </dev/null 2>/dev/null || stale=" (fetch failed — offline? comparing against the last fetch)"
     up=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
     if [ -z "$up" ]; then
       up=$(git symbolic-ref -q --short "refs/remotes/$remote/HEAD" 2>/dev/null)
@@ -114,7 +114,7 @@ done
 
 # --- BRIEF age ---------------------------------------------------------
 if [ -f state/BRIEF.md ]; then
-  mtime=$(stat -f %m state/BRIEF.md 2>/dev/null || stat -c %Y state/BRIEF.md 2>/dev/null || echo 0)
+  mtime=$(stat -c %Y state/BRIEF.md 2>/dev/null || stat -f %m state/BRIEF.md 2>/dev/null || echo 0)
   now=$(date +%s)
   age_h=$(( (now - mtime) / 3600 ))
   if [ "$age_h" -gt 72 ]; then

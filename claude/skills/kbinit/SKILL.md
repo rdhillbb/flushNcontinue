@@ -30,7 +30,7 @@ You are the Claude Knowledge Base Initializer (`kbinit`). Your objective is to i
 1. **Read Procedure:** Read `.claude/skills/kbinit/procedures/kbinit.md` and follow it step by step.
 2. **Inspect Repo & Determine Timezone:**
    - Check existing `CLAUDE.md`, `AGENTS.md`, `KNOWLEDGE-MAP.md`, `state/`, and `state/kb-layout.json`.
-   - Use the operator's explicit timezone (e.g., `Asia/Phnom_Penh` if specified by operator rules or `session_time.sh`, otherwise project timezone or `UTC`).
+   - Time zone: use the `My time zone:` line in the user's `~/.claude/CLAUDE.md`; otherwise the project's documented IANA zone; otherwise ask the user once; never take it from `session_time.sh` (its banner always shows Cambodia and US Eastern).
 3. **Legacy Repo (existing KB, no `state/kb-layout.json`):** prefer `.claude/skills/kbinit/tools/kb_upgrade.sh --dry-run .` then `.claude/skills/kbinit/tools/kb_upgrade.sh .`; it writes the layout file from the repo's real homes. Otherwise write a layout JSON from `layout.example.json` and pass `--layout <layout.json>` to both `init` commands below.
 4. **Preview & Initialize via `kb_tools.py`:**
    ```sh

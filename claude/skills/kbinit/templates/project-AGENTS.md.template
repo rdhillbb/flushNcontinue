@@ -19,7 +19,7 @@ This project's non-negotiable rules live here and nowhere else. Until the projec
 3. **Facts only — never fabricate or guess:** verify before asserting (`git show <hash>` before citing a commit; `ls` before pointing to a file). If you cannot find it or do not know, say so and stop. No invented paths, hashes, column names, dates, prices or citations. As a reviewer, never mint operator decisions.
 4. **Financials:** never compute money by hand; use the project's calculator tool. <fill: tool path, or delete this rule>
 5. **Ports:** every listener reads its port from the environment; record reservations in `PORTS.md`. A hardcoded port is a defect. <fill: how ports are reserved, or delete this rule>
-6. **Database:** connection details from the environment (`~/.zshrc` exports) or the secret store; never hardcode. Read the project's schema doc before writing SQL.
+6. **Database:** connection details from environment variables or the secret store; never hardcode. Read the project's schema doc before writing SQL.
 7. **Scope and preservation:** follow the operator's current scope; preserve unrelated work, comments and documentation. Record non-obvious decisions with their actual operator reason (WHY) and keep dead ends so a new context does not repeat them.
 8. **Operator communication:** read for intent (dyslexia, fast typing); ask when unclear; short plain replies; no em dashes in customer-facing text.
 9. <fill: project-specific rule (customer emails, build host, data sources ...), or delete this line>

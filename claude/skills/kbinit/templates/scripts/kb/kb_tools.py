@@ -139,9 +139,8 @@ def values(layout, at):
                             if layout["history_kind"] == "quarterly" else "Existing flat ledger, newest entry first")
     # Claude Code auto-memory for this repo (Codex has none). Override with an optional top-level
     # layout key "memory_dir" when a repo's memory is keyed on another path (e.g. a renamed checkout).
-    root = layout.get("_root")
-    derived = ("~/.claude/projects/" + str(root).replace("/", "-") + "/memory") if root else "~/.claude/projects/<repo-key>/memory"
-    vals["MEMORY_DIR"] = layout.get("memory_dir") or derived
+    # Never expand the machine path: these files are committed and shared across machines.
+    vals["MEMORY_DIR"] = layout.get("memory_dir") or "~/.claude/projects/<this repo's key>/memory"
     vals["TIME_ZONE"] = layout["timezone"]
     vals["TIME_ZONE_NOTE"] = "operator zone " + layout["timezone"] + " (state the zone in every timestamp)"
     return vals
@@ -262,6 +261,9 @@ def initialize(root, templates, project=None, zone="UTC", layout_file=None, dry_
                 warnings.append("Existing tool preserved (per-project CONFIG block, never refreshed): " + relative)
             else:
                 warnings.append("Existing tool preserved; review before --refresh-tools: " + relative)
+    # Unix line endings for the KB scripts, so a Windows checkout (Git for Windows defaults to CRLF) keeps bash working.
+    if not path_in(root, "scripts/kb/.gitattributes").exists():
+        planned["scripts/kb/.gitattributes"] = "* text=auto eol=lf\n"
     if path_in(root, "KNOWLEDGE-MAP.md").exists():
         warnings.append("Existing map preserved: reconcile its old Update Procedure and custom paths before declaring upgrade complete")
     if path_in(root, "zero.md").exists():
@@ -682,7 +684,9 @@ def lint(root, layout, parity=True):
         if len(parts) == 4:
             freshness["last_commit"] = (parts[0] + " " + parts[1])[:90]
             freshness["last_commit_date"] = parts[2]
-            if parts[3].isdigit() and brief_epoch and brief_epoch < int(parts[3]):
+            # A flush writes BRIEF and then commits it seconds later; that commit is not "without flushing".
+            in_head = _git(root, ["diff-tree", "--root", "--no-commit-id", "--name-only", "-r", "HEAD", "--", str(homes["brief"])])
+            if parts[3].isdigit() and brief_epoch and brief_epoch < int(parts[3]) and not (in_head or "").strip():
                 warn("freshness", "BRIEF is older than the last commit; a session committed without flushing")
         status = _git(root, ["status", "--short"])
         if status is not None:

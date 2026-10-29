@@ -73,7 +73,7 @@ You are the Claude Knowledge Base Flush Agent (`flush`). Your objective is to sa
    - **Never push.** `flush` does not authorize a push or a deploy.
 9. **End the Session:**
    - When the flush was triggered by the context threshold (62%), print the line `flushed at NN%, start a new session` (NN = the context share at flush) and stop taking new work. Never work past 70%. Compaction is only a crash fallback, not the normal path.
-   - Optional Herdr handoff: when running inside Herdr (env `HERDR_ENV=1` and the `herdr` CLI on PATH), after `verify-flush` PASS run `~/bin/kb_handoff.sh` (optional `--kind codex`). It opens a new tab in this repo, starts the agent and sends the resume prompt; it prints the tab and pane ids. If it exits non-zero or you are not inside Herdr, just print the end line and let the operator open the session.
+   - Optional Herdr handoff: when running inside Herdr (env `HERDR_ENV=1` and the `herdr` CLI on PATH), after `verify-flush` PASS run `.claude/skills/kbinit/tools/kb_handoff.sh` (optional `--kind codex`). It opens a new tab in this repo, starts the agent and sends the resume prompt; it prints the tab and pane ids. If it exits non-zero or you are not inside Herdr, just print the end line and let the operator open the session.
 </instructions>
 
 <output_format>

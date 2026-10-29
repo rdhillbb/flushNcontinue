@@ -1,6 +1,6 @@
 # Personal instructions (Claude Code, all projects)
 
-Written by flushNcontinue/install.sh because this file did not exist. Edit freely; the
+Copied from flushNcontinue/templates/personal-CLAUDE.md (README, Finish setup step 1). Edit freely; the
 installer never overwrites it. Project rules live in each repo's AGENTS.md / CLAUDE.md.
 
 ## Who I am

@@ -9,7 +9,7 @@ __pycache__/
 .DS_Store
 # laptop-history docs, not shipped
 FACTORYMATERIAL-README.md
-claude/kb/AGENTIC-SETUP-PROMPT.md
+claude/skills/kbinit/templates/AGENTIC-SETUP-PROMPT.md
 # KB only (operator 2026-10-27): software-factory skills, docs and tooling are not shipped
 claude/skills/softwarefactory/
 claude/skills/task-order-author/
